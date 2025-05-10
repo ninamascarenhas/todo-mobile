@@ -1,59 +1,80 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import React from "react";
+import "../../globals.css";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
+import { Platform, StatusBar, View } from "react-native";
+import { useColorScheme } from "nativewind";
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof Ionicons>["name"];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <Ionicons size={26} style={{ marginBottom: -3 }} {...props} />;
 }
 
+export const unstable_settings = {
+  unmountOnBlur: true,
+};
+
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { colorScheme } = useColorScheme();
+  const isDarkMode = colorScheme === "dark";
+  const statusBarColor = isDarkMode ? "#030711" : "#9333ea";
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+    <>
+      <StatusBar barStyle="light-content" backgroundColor={statusBarColor} />
+      <View
+        style={{
+          flex: 1,
+          paddingTop: Platform.OS === "android" ? 20 : 60,
+          backgroundColor: statusBarColor,
         }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs
+          screenOptions={{
+            tabBarActiveTintColor: isDarkMode ? "#fff" : "#000",
+            tabBarInactiveTintColor: isDarkMode ? "#aaa" : "#ccc",
+            tabBarStyle: {
+              backgroundColor: isDarkMode ? "#030711" : "#fff",
+              height: 55,
+              paddingTop: Platform.OS === "ios" ? 5 : 0,
+              paddingBottom: Platform.OS === "ios" ? 64 : 0,
+              borderTopWidth: 0.2,
+              borderTopColor: isDarkMode ? "#030711" : "#ccc",
+            },
+            headerShown: false,
+          }}
+        >
+          <Tabs.Screen
+            name="index"
+            options={{
+              title: "Tasks",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="checkmark-done" color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="two"
+            options={{
+              title: "Nova",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="add-circle" color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="three"
+            options={{
+              title: "Profile",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="person" color={color} />
+              ),
+            }}
+          />
+        </Tabs>
+      </View>
+    </>
   );
 }
